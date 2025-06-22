@@ -1,0 +1,24 @@
+controller:
+  admin:
+    username: admin
+    password: admin
+  serviceType: LoadBalancer  # 또는 NodePort
+  installPlugins:
+    - configuration-as-code
+    - git
+    - github
+    - gradle
+    - kubernetes
+    - kubernetes-credentials
+    - kubernetes-credentials-provider
+    - workflow-aggregator
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000 # 볼륨 마운트 권한을 설정
+  nodeSelector:
+    kubernetes.io/hostname: k8s-worker1
+
+persistence:
+  enabled: true
+  existingClaim: jenkins-pvc  # 아래에서 직접 생성할 PVC 이름
