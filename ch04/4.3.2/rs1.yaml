@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: sysinfo
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: sysinfo
+  template:
+    metadata:
+      labels:
+        app: sysinfo
+    spec:
+      containers:
+      - name: sysinfo
+        image: ekchoi3912/myapp3:v1 
