@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: hello
 spec:
-  schedule: "*/1 * * * *"    
+  schedule: "*/1 * * * *"  # 분(0-59) 시(0-23) 일(1-31) 월(1-12) 요일(0-6, 0=일요일)
   jobTemplate:
     spec:
       template:

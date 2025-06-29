@@ -1,0 +1,91 @@
+---
+# registry-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: registry-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard  
+  hostPath:
+    path: /nfs_shared/registry
+
+---
+# registry-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: registry-pvc
+  namespace: registry
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+  
+---
+# registry-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry
+  namespace: registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry
+  template:
+    metadata:
+      labels:
+        app: registry
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-worker3
+      containers:
+      - name: registry
+        image: registry:2
+        ports:
+        - containerPort: 5000
+        env:
+        - name: REGISTRY_HTTP_ADDR
+          value: "0.0.0.0:5000"
+        - name: REGISTRY_HTTP_TLS_CERTIFICATE
+          value: "/certs/domain.crt"
+        - name: REGISTRY_HTTP_TLS_KEY
+          value: "/certs/domain.key"
+        volumeMounts:
+        - name: registry-storage
+          mountPath: /var/lib/registry
+        - name: certs
+          mountPath: /certs
+          readOnly: true
+      volumes:
+      - name: registry-storage
+        persistentVolumeClaim:
+          claimName: registry-pvc
+      - name: certs
+        secret:
+          secretName: registry-certs
+
+---
+# registry-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry
+  namespace: registry
+spec:
+  type: NodePort
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 32000
+  selector:
+    app: registry

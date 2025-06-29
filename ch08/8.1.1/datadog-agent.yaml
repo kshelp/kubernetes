@@ -1,0 +1,36 @@
+kind: "DatadogAgent"
+apiVersion: "datadoghq.com/v2alpha1"
+metadata:
+  name: "datadog"
+spec:
+  global:
+    site: "ap1.datadoghq.com"
+    credentials:
+      apiSecret:
+        secretName: "datadog-secret"
+        keyName: "api-key"
+    clusterName: "k8s"
+    registry: "192.168.127.131:32000"
+    tags:
+      - "env:dev"
+  features:
+    apm:
+      instrumentation:
+        enabled: true
+        targets:
+          - name: "default-target"
+            ddTraceVersions:
+              java: "1"
+              python: "3"
+              js: "5"
+              php: "1"
+              dotnet: "3"
+    logCollection:
+      enabled: true
+      containerCollectAll: true
+    usm:
+      enabled: true
+    npm:
+      enabled: true
+    liveProcessCollection:
+      enabled: true

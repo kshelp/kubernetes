@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deploy
+  namespace: mysql # MySQL이 위치할 네임스페이스 (기본값은 default)
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      # Pod 전체에 대한 Security Context 설정
+      # runAsUser/Group: MySQL 프로세스가 컨테이너 내에서 이 UID/GID로 실행된다.
+      # fsGroup: 마운트된 볼륨의 그룹 소유권을 이 GID로 강제한다.
+      securityContext:
+        runAsUser: 999 # MySQL 컨테이너 내부의 'mysql' 사용자 UID
+        runAsGroup: 999 # MySQL 컨테이너 내부의 'mysql' 그룹 GID
+        fsGroup: 999 # 볼륨의 그룹 소유권을 이 GID로 설정. NFS 권한 문제 해결에 핵심.
+      containers:
+        - name: mysql
+          image: mysql:8.0.29
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql # MySQL 데이터가 저장될 경로
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+
