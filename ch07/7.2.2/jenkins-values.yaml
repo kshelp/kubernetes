@@ -1,0 +1,83 @@
+controller:
+  admin:
+    username: admin
+    password: admin
+  #adminSecret: jenkins-admin-secret  # 별도로 만든 Secret 참조
+
+  serviceType: LoadBalancer
+
+  installPlugins:
+    # - configuration-as-code
+    - git
+    - github
+    - gradle
+    - kubernetes
+    - kubernetes-credentials
+    - kubernetes-credentials-provider
+    - workflow-aggregator
+
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+  
+  # 필요한 경우 특정 노드에만 배치
+  # nodeSelector:
+  #   kubernetes.io/hostname: k8s-worker3
+
+  # JCasC:
+  #   configScripts:
+  #     kubernetes-cloud-config: |
+  #       jenkins:
+  #         clouds:
+  #           - kubernetes:
+  #               name: "kubernetes"
+  #               namespace: "jenkins"
+  #               jenkinsUrl: http://jenkins:8080
+  #               jenkinsTunnel: jenkins:50000
+  #               containerCapStr: "10"
+  #               serverUrl: https://kubernetes.default
+  #               skipTlsVerify: true
+  #               templates:
+  #                 - name: "default-agent"
+  #                   label: "jenkins-agent"
+  #                   nodeUsageMode: NORMAL
+  #                   idleMinutes: 1
+  #                   activeDeadlineSeconds: 1200
+  #                   containers:
+  #                     - name: "jnlp"
+  #                       image: "jenkins/inbound-agent:latest"
+  #                       ttyEnabled: true
+  #                       command: ""
+  #                       resources:
+  #                         requests:
+  #                           cpu: "200m"
+  #                           memory: "512Mi"
+  #                         limits:
+  #                           cpu: "1"
+  #                           memory: "1Gi"
+  #                     - name: "docker"
+  #                       image: "docker:24.0.2"
+  #                       command:
+  #                         - cat
+  #                       ttyEnabled: true
+  #                       volumeMounts:
+  #                         - name: docker-socket
+  #                           mountPath: /var/run/docker.sock
+  #                   volumes:
+  #                     - name: docker-socket
+  #                       hostPath:
+  #                         path: /var/run/docker.sock
+  #                         type: Socket
+
+persistence:
+  enabled: true
+  existingClaim: jenkins-pvc  # 사전에 생성된 PVC
+  # storageClass: ""  # 제거해도 무방함
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name: jenkins

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain # PV 삭제 시 데이터 보존 정책 (Delete, Recycle, Retain)
+  nfs:
+    server: k8s-worker3 # NFS 서버의 IP 주소 또는 호스트 이름으로 변경하세요.
+    path: /nfs_shared/jenkins # NFS 서버의 공유 경로
+  claimRef: # 특정 PVC에 바인딩되도록 명시
+    name: jenkins-pvc # 허용할 PVC의 이름
+    namespace: jenkins # PVC가 위치한 네임스페이스 (기본값은 default)
+  
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pvc
+  namespace: jenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi # PV 용량과 일치하거나 작아야 한다
+  volumeName: jenkins-pv # 여기에 바인딩하려는 특정 PV의 이름을 명시한다.

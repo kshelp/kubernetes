@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-svc
+  namespace: mysql # MySQL이 위치할 네임스페이스 (기본값은 default)
+spec:
+  type: LoadBalancer # 외부에서 접근하려면 NodePort 또는 LoadBalancer로 변경하세요.
+  loadBalancerIP: 192.168.127.250 # LoadBalancer의 고정 IP 주소 설정
+  selector:
+    app: mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306

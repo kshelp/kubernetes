@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: mysql # PVC가 위치할 네임스페이스 (기본값은 default)
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi # PV 용량과 일치하거나 작아야 한다.
+  volumeName: mysql-pv # 여기에 바인딩하려는 특정 PV의 이름을 명시한다.

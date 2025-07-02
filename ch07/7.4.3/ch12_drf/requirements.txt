@@ -1,0 +1,19 @@
+# 패키지 설치
+# Ubuntu/Debian 환경에서 MySQL 클라이언트 라이브러리 설치
+# sudo apt update
+# sudo apt install libmysqlclient-dev pkg-config
+# pip install -r requirements.txt
+# Django>=4.2
+# djangorestframework
+# djangorestframework_simplejwt
+# django-filter
+# gunicorn
+# mysqlclient
+# pillow
+# requests
+
+Django>=4.2,<5.0
+djangorestframework>=3.14.0
+djangorestframework_simplejwt
+gunicorn
+mysqlclient>=2.2.0

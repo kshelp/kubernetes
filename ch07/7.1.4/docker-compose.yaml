@@ -1,0 +1,12 @@
+version: '3'
+services:
+  registry:
+    image: registry:2
+    container_name: registry
+    ports:
+      - "32000:5000"
+    volumes:
+      - /nfs_shared/registry:/var/lib/registry
+      #- ./config.yaml:/etc/docker/registry/config.yml  # 👈 설정 파일 마운트
+    restart: always
+
