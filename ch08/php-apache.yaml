@@ -3,25 +3,40 @@ kind: Deployment
 metadata:
   name: php-apache
 spec:
+  replicas: 1
   selector:
     matchLabels:
       run: php-apache
-  replicas: 1
   template:
     metadata:
       labels:
         run: php-apache
     spec:
       containers:
-      - name: php-apache
-        image: k8s.gcr.io/hpa-example
-        ports:
-        - containerPort: 80
-        resources:
-          limits:
-            cpu: 500m
-          requests:
-            cpu: 200m
+        - name: php-apache
+          image: php:7.4-apache
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+          volumeMounts:
+            - name: html
+              mountPath: /var/www/html
+        # Init container to write index.html
+      initContainers:
+        - name: init-html
+          image: busybox
+          command: ["sh", "-c", 'echo "Hello from PHP-Apache" > /html/index.html']
+          volumeMounts:
+            - name: html
+              mountPath: /html
+      volumes:
+        - name: html
+          emptyDir: {}
+
 ---
 apiVersion: v1
 kind: Service
